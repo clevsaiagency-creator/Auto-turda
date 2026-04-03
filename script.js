@@ -122,9 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =============================================
-    // SCROLL REVEAL
+    // SCROLL REVEAL — all directions
     // =============================================
-    const revealElements = document.querySelectorAll('.reveal-up');
+    const revealElements = document.querySelectorAll(
+        '.reveal-up, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur'
+    );
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -134,11 +136,80 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, {
-        threshold: 0.15,
-        rootMargin: '0px 0px -40px 0px'
+        threshold: 0.12,
+        rootMargin: '0px 0px -30px 0px'
     });
 
     revealElements.forEach(el => revealObserver.observe(el));
+
+    // =============================================
+    // PARALLAX — Hero content on scroll
+    // =============================================
+    const heroContent = document.querySelector('.hero-content');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const isMobile = () => window.innerWidth <= 768;
+
+    if (heroContent && !prefersReducedMotion) {
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    if (scrollY < window.innerHeight * 1.2) {
+                        // Pe mobile parallax mai subtil — conținutul e aliniat sus nu centrat
+                        const intensity = isMobile() ? 0.12 : 0.22;
+                        heroContent.style.transform = `translateY(${scrollY * intensity}px)`;
+                        heroContent.style.opacity = 1 - (scrollY / (window.innerHeight * 0.9));
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+    }
+
+    // =============================================
+    // 3D TILT — Service cards & Why cards
+    // =============================================
+    if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+        document.querySelectorAll('.service-card, .why-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'transform 0.15s ease, box-shadow 0.3s ease, border-color 0.3s ease';
+            });
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = `perspective(700px) rotateX(${-y * 9}deg) rotateY(${x * 9}deg) translateY(-6px) scale(1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease';
+                card.style.transform = '';
+            });
+        });
+    }
+
+    // =============================================
+    // MAGNETIC BUTTONS — subtle cursor attraction
+    // =============================================
+    if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+        document.querySelectorAll('.btn-primary, .nav-cta').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                btn.style.transition = 'transform 0.2s ease, background 0.3s, box-shadow 0.3s';
+            });
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) * 0.28;
+                const y = (e.clientY - rect.top - rect.height / 2) * 0.28;
+                btn.style.transform = `translateX(${x}px) translateY(${y}px)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s, box-shadow 0.3s';
+                btn.style.transform = '';
+            });
+        });
+    }
 
     // =============================================
     // CAR VIDEO — Smooth autoplay (slow speed)

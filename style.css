@@ -256,6 +256,10 @@ input, select, textarea { font-family: inherit; }
     box-shadow: 0 8px 24px var(--orange-glow);
 }
 
+.nav-cta-mobile {
+    display: none;
+}
+
 .nav-toggle {
     display: none;
     flex-direction: column;
@@ -1459,10 +1463,33 @@ body:has(button:hover) #cursor-ring {
 }
 
 /* =============================================
-   SERVICE CARD GLOW
+   SERVICE CARD GLOW + TILT
    ============================================= */
 .service-card:hover {
     box-shadow: 0 0 30px rgba(249, 115, 22, 0.15), 0 20px 50px rgba(0,0,0,0.5) !important;
+}
+
+/* Tilt cards — JS handles transform, CSS handles smoothing */
+.service-card,
+.why-card {
+    will-change: transform;
+    transform-style: preserve-3d;
+}
+
+/* Magnetic button container */
+.btn-primary,
+.btn-outline {
+    will-change: transform;
+}
+
+/* Section line accent — animates on scroll */
+.section-tag {
+    position: relative;
+}
+
+/* Hero parallax layer */
+.hero-content {
+    will-change: transform;
 }
 
 /* =============================================
@@ -1487,18 +1514,78 @@ body:has(button:hover) #cursor-ring {
 }
 
 /* =============================================
-   SECTION ENTRANCE — more dramatic
+   SECTION ENTRANCE ANIMATIONS
    ============================================= */
+
+/* Up */
 .reveal-up {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(48px);
     transition: opacity 0.75s cubic-bezier(0.4, 0, 0.2, 1), transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: var(--delay, 0s);
 }
-
 .reveal-up.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Left */
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-64px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: var(--delay, 0s);
+}
+.reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Right */
+.reveal-right {
+    opacity: 0;
+    transform: translateX(64px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: var(--delay, 0s);
+}
+.reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Scale pop — carduri */
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.82) translateY(24px);
+    transition: opacity 0.6s cubic-bezier(0.34, 1.4, 0.64, 1), transform 0.6s cubic-bezier(0.34, 1.4, 0.64, 1);
+    transition-delay: var(--delay, 0s);
+}
+.reveal-scale.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+/* Blur in — titluri principale */
+.reveal-blur {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(20px);
+    transition: opacity 0.9s ease, filter 0.9s ease, transform 0.9s ease;
+    transition-delay: var(--delay, 0s);
+}
+.reveal-blur.visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .reveal-up, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur {
+        transition: opacity 0.3s ease !important;
+        transform: none !important;
+        filter: none !important;
+    }
 }
 
 /* Stat number pulse when visible */
@@ -1564,8 +1651,8 @@ body:has(button:hover) #cursor-ring {
 }
 
 @media (max-width: 768px) {
+    /* --- Navbar --- */
     .nav-links, .nav-cta { display: none; }
-
     .nav-toggle { display: flex; }
 
     .nav-links.open {
@@ -1576,57 +1663,187 @@ body:has(button:hover) #cursor-ring {
         width: 100%;
         background: rgba(10, 10, 10, 0.98);
         backdrop-filter: blur(20px);
-        padding: 24px;
-        gap: 20px;
+        padding: 20px 24px 28px;
+        gap: 18px;
         border-bottom: 1px solid var(--black-border);
     }
 
-    .services-grid {
-        grid-template-columns: 1fr;
+    /* CTA button inside open mobile nav */
+    .nav-cta-mobile {
+        margin-top: 6px;
     }
 
-    .hero-video {
-        display: none;
+    .nav-cta-mobile a {
+        display: block;
+        background: var(--orange);
+        color: var(--black) !important;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: center;
+        padding: 14px;
+        border-radius: var(--radius-sm);
+        letter-spacing: 0.5px;
     }
 
+    /* --- Hero --- */
+    .hero-video { display: none; }
+
+    /* Stronger gradient since no video on mobile */
+    .hero-gradient-overlay {
+        background:
+            linear-gradient(180deg, rgba(10,10,10,0.6) 0%, transparent 20%),
+            linear-gradient(0deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.5) 40%, transparent 70%),
+            radial-gradient(ellipse at 50% 60%, rgba(249,115,22,0.06) 0%, transparent 70%);
+    }
+
+    /* Hero — fix overlap cu navbar */
     .hero-content {
-        padding: 0 20px;
+        padding: 100px 20px 40px;   /* top: navbar(72px) + spațiu */
+        align-items: flex-start;
+        justify-content: flex-start; /* nu mai centra vertical — nu mai overflowuieste */
+        align-self: stretch;        /* umple tot hero-ul, nu se mai centrează */
+        height: auto;
+        min-height: 100svh;         /* svh = small viewport height, fix Safari mobile */
+    }
+
+    .hero-badge {
+        font-size: 11px;
+        padding: 8px 14px;
+        margin-bottom: 16px;
     }
 
     .hero-title {
-        font-size: clamp(2.8rem, 10vw, 4.5rem);
+        font-size: clamp(2.6rem, 10vw, 4rem);
+        margin-bottom: 14px;
+        line-height: 0.95;
     }
 
+    /* Remove the offset on mobile */
+    .hero-title-accent {
+        margin-left: 0;
+    }
+
+    .hero-subtitle {
+        font-size: 14px;
+        margin-bottom: 24px;
+        max-width: 100%;
+        line-height: 1.6;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 28px;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 15px 20px;
+        font-size: 15px;
+    }
+
+    /* Stats: 164 + 4.2 sus, 6 Servicii centrat jos */
     .hero-stats {
-        flex-wrap: wrap;
-        gap: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        width: 100%;
     }
 
-    .stat-divider {
+    /* Al 3-lea stat — centrat pe rândul lui */
+    .hero-stats .stat:nth-child(3) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: 50%;
+    }
+
+    .stat {
+        padding: 11px 12px;
+        gap: 10px;
+    }
+
+    .stat-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+
+    .stat-divider { display: none; }
+
+    /* --- Sections --- */
+    .section { padding: 72px 0; }
+
+    .section-header {
+        margin-bottom: 40px;
+        padding: 0 4px;
+    }
+
+    /* --- Services --- */
+    .services-grid { grid-template-columns: 1fr; }
+
+    .servicii-title {
+        font-size: clamp(2rem, 8vw, 2.8rem);
+        margin-bottom: 40px;
+        letter-spacing: 1.5px;
+    }
+
+    .service-card {
+        padding: 28px 20px;
+    }
+
+    /* --- De Ce Noi --- */
+    .why-watermark-top,
+    .why-watermark-bottom {
         display: none;
     }
 
-
-    .form-row {
+    .why-cards {
         grid-template-columns: 1fr;
+        gap: 12px;
     }
+
+    .why-coord { display: none; }
+
+    /* --- Recenzii --- */
+    .recenzii-title {
+        font-size: clamp(2rem, 8vw, 2.8rem);
+        letter-spacing: 1.5px;
+        margin-bottom: 36px;
+    }
+
+    .review-card {
+        min-width: 280px;
+        padding: 24px 20px;
+    }
+
+    /* --- Programare --- */
+    .form-row { grid-template-columns: 1fr; }
 
     .appointment-form {
         padding: 28px 20px;
     }
 
-    .review-card {
-        min-width: 300px;
+    .form-info .section-title {
+        text-align: center;
     }
 
-    .contact-phones {
-        grid-template-columns: 1fr;
-    }
+    .form-desc { text-align: center; }
 
-    .contact-map {
-        height: 280px;
-    }
+    /* --- Contact --- */
+    .contact-phones { grid-template-columns: 1fr; }
 
+    .contact-map { height: 260px; }
+
+    /* --- Footer --- */
     .footer-content {
         flex-direction: column;
         gap: 24px;
@@ -1639,25 +1856,53 @@ body:has(button:hover) #cursor-ring {
     }
 }
 
+/* =============================================
+   MOBILE — Small phones (≤480px)
+   ============================================= */
 @media (max-width: 480px) {
-    .hero-title {
-        font-size: 2.5rem;
+    .hero-title { font-size: clamp(2.2rem, 10vw, 3rem); }
+
+    /* Mai mult padding-top pe telefoane mici — navbar mai compact */
+    .hero-content { padding: 90px 16px 28px; }
+
+    /* Stats rămân 2 coloane — al 3-lea centrat */
+    .hero-stats {
+        grid-template-columns: 1fr 1fr;
     }
 
-    .hero-actions {
-        flex-direction: column;
+    .hero-stats .stat:nth-child(3) {
+        width: 55%;
     }
 
-    .btn {
-        width: 100%;
-        justify-content: center;
+    .section { padding: 60px 0; }
+
+    .section-title { font-size: 1.9rem; }
+
+    .section-header { margin-bottom: 32px; }
+
+    .why-title-orange,
+    .why-title-white {
+        font-size: 1.8rem;
     }
 
-    .section {
-        padding: 72px 0;
-    }
+    .recenzii-title { font-size: 1.9rem; }
 
-    .section-title {
-        font-size: 2rem;
-    }
+    .appointment-form { padding: 24px 16px; }
+
+    .contact-mini-card { padding: 14px 16px; }
+}
+
+/* =============================================
+   MOBILE — Very small phones (≤390px)
+   ============================================= */
+@media (max-width: 390px) {
+    .hero-title { font-size: 2.4rem; }
+
+    .hero-badge { font-size: 10px; padding: 7px 12px; }
+
+    .nav-logo { font-size: 1.3rem; }
+
+    .service-card { padding: 22px 16px; }
+
+    .why-card { padding: 18px; }
 }

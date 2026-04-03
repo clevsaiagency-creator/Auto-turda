@@ -77,6 +77,27 @@ menit să impresioneze și să închidă vânzarea la €200.
 - [ ] Video garaj intro (Alex generează în Nano Banana / High Field)
 - [ ] Poze reale de la client (după semnarea contractului)
 - [ ] Domeniu custom (după semnare)
+- [ ] **Mobile version** — site-ul are CSS responsive de bază, dar trebuie o versiune mobilă dedicată, diferită vizual față de desktop
+
+---
+
+## TODO — 2026-04-03
+
+### 1. Trimite lead-urile calificate de ieri
+- Rulează outreach pe lead-urile calificate existente din `leads/leads_master.csv`
+- Canal primar: WhatsApp (dacă au telefon) sau email
+- Workflow: `workflows/outreach.md`
+
+### 2. Scrape lead-uri noi
+- Target: minim 30 leads/zi calificate (acum avem ~10)
+- Mai trebuie ~20 leads calificate azi
+- Rulează: `tools/scrape_google_maps.py` + `tools/check_website_quality.py`
+- Orașe: Turda, Câmpia Turzii, Dej, Huedin, Alba Iulia
+
+### 3. Mobile version a site-ului AutoHub
+- Versiune mobilă dedicată (nu doar responsive CSS)
+- Layout diferit: hero full-screen cu text centrat, carduri stacked, form simplu
+- Adaptabil per client
 
 ---
 
